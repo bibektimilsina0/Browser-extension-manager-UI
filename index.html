@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html lang="en" id="page">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Frontend Mentor | Browser Extensions Manager UI</title>
+  <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png" />
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <style>
+    .attribution { font-size: 11px; text-align: center; }
+    .attribution a { color: hsl(228, 45%, 44%); }
+  </style>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class'
+    }
+  </script>
+  <style>
+    @font-face {
+      font-family: 'Noto Sans';
+      font-style: normal;
+      font-weight: 400;
+      src: url('/assets/fonts/static/NotoSans-Regular.ttf') format('truetype');
+    }
+    body {
+      font-family: 'Noto Sans', sans-serif;
+    }
+  </style>
+</head>
+<body  class="bg-white text-black dark:text-white bg-[linear-gradient(180deg,_#EBF2FC_0%,_#EEF8F9_100%)] dark:bg-[linear-gradient(180deg,_#040918_0%,_#091540_100%)]">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center bg-[hsl(200,60%,99%)] dark:bg-[hsl(226,25%,17%)] px-4 py-2 sm:p-4 m-4 sm:m-8 rounded-xl sm:rounded-2xl">
+    <img src="/assets/images/logo.svg" alt="Logo" class="h-8 dark:invert" />
+    <button id="themeToggle" class="rounded-xl bg-[hsl(0,0%,93%)] hover:bg-[hsl(0,0%,78%)] dark:bg-[hsl(225,23%,24%)] dark:hover:bg-[hsl(226,11%,37%)] p-3 focus:ring-2 focus:ring-[hsl(3,71%,56%)] focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-1 dark:focus:ring-offset-black">
+      <img id="themeIcon" src="/assets/images/icon-moon.svg" alt="Toggle Theme" class="h-4 sm:h-6 w-4 sm:w-6" />
+    </button>
+  </div>
+
+  <!-- Extension List Header -->
+  <div class="flex flex-col sm:flex-row justify-between items-center m-2 sm:m-8 p-4">
+    <h2 class="font-semibold text-black dark:text-white text-2xl sm:text-3xl text-bold p-4 items-center">Extensions List</h2>
+    <div class="flex space-x-4">
+      <button data-filter="all" class=" filter-btn px-4 py-2 rounded-full bg-[hsl(200,60%,99%)] dark:bg-[hsl(225,23%,24%)] shadow hover:bg-[hsl(0,0%,93%)] dark:hover:bg-[hsl(226,11%,37%)] focus:ring-2 focus:ring-[hsl(3,71%,56%)] focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-1 dark:focus:ring-offset-black transition-colors">
+        All
+      </button>
+      <button data-filter="active" class="filter-btn px-4 py-2 rounded-full bg-[hsl(200,60%,99%)] dark:bg-[hsl(225,23%,24%)] shadow hover:bg-[hsl(0,0%,93%)] dark:hover:bg-[hsl(226,11%,37%)] focus:ring-2 focus:ring-[hsl(3,71%,56%)] focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-1 dark:focus:ring-offset-black transition-colors">
+        Active
+      </button>
+      <button data-filter="inactive" class="filter-btn px-4 py-2 rounded-full bg-[hsl(200,60%,99%)] dark:bg-[hsl(225,23%,24%)] shadow hover:bg-[hsl(0,0%,93%)] dark:hover:bg-[hsl(226,11%,37%)] focus:ring-2 focus:ring-[hsl(3,71%,56%)] focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-1 dark:focus:ring-offset-black transition-colors">
+        Inactive
+      </button>
+    </div>
+  </div>
+
+  <!-- Extensions Container -->
+  <div id="extensions-container" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 m-4 sm:m-8 p-1 sm:p-4"></div>
+
+  <!-- Data Handling and Theme Script -->
+  <script defer>
+    let allData = [];
+
+    function renderExtensions(data) {
+      const container = document.getElementById('extensions-container');
+      container.innerHTML = '';
+
+      data.forEach(item => {
+        const div = document.createElement('div');
+        div.className = "bg-[hsl(200,60%,99%)] dark:bg-[hsl(226,25%,17%)] p-4 rounded-2xl shadow gap-4";
+
+        div.innerHTML = `
+          <div class="flex flex-row gap-4 ">
+            <img src="${item.logo}" alt="${item.name}" class="w-14 sm:w-16 h-14 sm:h-16 object-contain rounded-md" />
+            <div class="flex-1">
+              <h3 class="text-base sm:text-xl font-semibold text-[hsl(227,75%,14%)] dark:text-[hsl(0,0%,93%)]">${item.name}</h3>
+              <p class=" text-sm sm:text-base mt-2 text-[hsl(226,11%,37%)] dark:text-[hsl(0,0%,78%)]">${item.description}</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between gap-2 mt-6 mb-2">
+            <button class=" text-hsl(227,75%,14%) dark:text-[hsl(0,0%,93%)] px-3 sm:px-4 py-1 rounded-full bg-[hsl(200,60%,99%)] dark:bg-[hsl(226,25%,17%)] shadow border border-[hsl(0,0%,78%)] dark:border-white hover:bg-[hsl(3,77%,44%)] dark:hover:bg-[hsl(3,77%,44%)] hover:border-none hover:text-[hsl(0,0%,78%)] dark:hover:text-hsl(227,75%,14%) focus:ring-2 focus:ring-[hsl(3,71%,56%)] focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-1 dark:focus:ring-offset-black">Remove</button>
+            <label class="relative cursor-pointer inline-flex items-center ">
+              <input type="checkbox" class="sr-only peer focus:ring-2 focus:ring-[hsl(3,71%,56%)] focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-black " ${item.isActive ? 'checked' : ''}>
+              <div class="w-11 h-6 bg-[hsl(0,0%,78%)] dark:bg-[hsl(226,11%,37%)] rounded-full peer peer-checked:bg-[hsl(3,77%,44%)] peer-checked:hover:bg-[hsl(3,71%,56%)] dark:peer-checked:bg-[hsl(3,71%,56%)] dark:peer-checked:hover:bg-[hsl(3,77%,44%)] focus:ring-2 focus:ring-[hsl(3,71%,56%)] focus:ring-offset-1 focus:ring-offset-white dark:focus:ring-offset-1 dark:focus:ring-offset-black transition-all            peer-focus:ring-2 peer-focus:ring-[hsl(3,71%,56%)] peer-focus:ring-offset-1 peer-focus:ring-offset-white dark:peer-focus:ring-offset-black"></div>
+              <div class="absolute left-1 top-1 bg-white w-4 h-4 rounded-full transition-transform peer-checked:translate-x-5"></div>
+            </label>
+          </div>
+        `;
+
+        container.appendChild(div);
+      });
+    }
+
+    function setActiveFilter(filter) {
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    const btnFilter = btn.getAttribute('data-filter');
+    const isActive = btnFilter === filter;
+
+    // Remove active/inactive styles first
+    btn.classList.remove(
+      'bg-[hsl(3,77%,44%)]',
+      'text-white',
+      'dark:bg-[hsl(3,71%,56%)]',
+      'text-gray-300'
+    );
+
+    if (isActive) {
+      btn.classList.add(
+        'bg-[hsl(3,77%,44%)]',   // Light mode active
+        'dark:bg-[hsl(3,71%,56%)]',
+        'text-white',
+        'dark:text-black',
+        'hover:bg-[hsl(3,71%,56%)]', // Light mode hover
+        'dark:hover:bg-[hsl(3,77%,44%)]',
+      );
+    } 
+  });
+}
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fetch('/data.json')
+        .then(res => res.json())
+        .then(data => {
+          allData = data;
+          renderExtensions(allData);
+          setActiveFilter('all');
+        })
+        .catch(err => console.error('Error loading data:', err));
+
+      document.querySelectorAll('[data-filter]').forEach(button => {
+        button.addEventListener('click', e => {
+          const type = e.currentTarget.getAttribute('data-filter');
+          setActiveFilter(type);
+
+          if (type === 'all') {
+            renderExtensions(allData);
+          } else if (type === 'active') {
+            renderExtensions(allData.filter(item => item.isActive));
+          } else if (type === 'inactive') {
+            renderExtensions(allData.filter(item => !item.isActive));
+          }
+        });
+      });
+
+      const themeToggle = document.getElementById('themeToggle');
+      const themeIcon = document.getElementById('themeIcon');
+      const body = document.getElementById('page');
+
+      themeToggle.addEventListener("click", () => {
+        body.classList.toggle("dark");
+        const isDark = body.classList.contains("dark");
+        themeIcon.src = isDark ? "/assets/images/icon-sun.svg" : "/assets/images/icon-moon.svg";
+      });
+    });
+  </script>
+
+  <div class="attribution mt-8">
+    Challenge by <a href="https://www.frontendmentor.io?ref=challenge" target="_blank">Frontend Mentor</a>. 
+    Coded by <a href="#">Bibek Timilsina</a>.
+  </div>
+</body>
+</html>
